@@ -2,8 +2,14 @@ package com.varshney.deliverysystem;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,7 +19,9 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,18 +30,32 @@ public class MainActivity extends AppCompatActivity {
     public static final int RC_SIGN_IN=1;
     public static final String ANONYMOUS = "anonymous";
     public static final String TAG = "MA";
-
-
     private String mUsername;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        TabLayout tabs = findViewById(R.id.tabs);
+        tabs.addTab(tabs.newTab().setText("Fashion"));
+        tabs.addTab(tabs.newTab().setText("FoodFragment"));
+
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        setUpViewPager(viewPager);
+        tabs.setupWithViewPager(viewPager);
+
+
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         mUsername = ANONYMOUS;
+
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -62,6 +84,37 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void setUpViewPager(ViewPager viewPager)
+    {
+        MyAdapter myAdapter = new MyAdapter(getSupportFragmentManager());
+        myAdapter.addFragment(new FoodFragment(),"Food");
+        myAdapter.addFragment(new FashionFragment(),"Fashion");
+    }
+
+    static class MyAdapter extends FragmentPagerAdapter{
+
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentaTitleList = new ArrayList<>();
+
+        public MyAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment,String title) {
+            mFragmentList.add(fragment);
+            mFragmentaTitleList.add(title);
+        }
+    }
 
     private void onSignedOutCleanUp() {
         mUsername = ANONYMOUS;
