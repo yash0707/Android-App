@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
         MyAdapter myAdapter = new MyAdapter(getSupportFragmentManager());
         myAdapter.addFragment(new FoodFragment(),"Food");
         myAdapter.addFragment(new FashionFragment(),"Fashion");
+
+        viewPager.setAdapter(myAdapter);
     }
 
     static class MyAdapter extends FragmentPagerAdapter{
